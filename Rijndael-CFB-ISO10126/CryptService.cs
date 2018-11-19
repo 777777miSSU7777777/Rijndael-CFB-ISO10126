@@ -7,12 +7,9 @@ namespace Rijndael_CFB_ISO10116
 {
     public class CryptService
     {
-        private static readonly byte[] SALT = new byte[] { 0x26, 0xdc, 0xff, 0x00,
-                                                            0xad, 0xed, 0x7a, 0xee,
-                                                            0xc5, 0xfe, 0x07, 0xaf,
-                                                            0x4d, 0x08, 0x22, 0x3c };
+        private static byte[] salt;
         private static RijndaelManaged RijndaelProvider;
-
+        private static RNGCryptoServiceProvider rng;
         private static Rfc2898DeriveBytes Pwd_bytes;
 
         static CryptService()
@@ -20,11 +17,14 @@ namespace Rijndael_CFB_ISO10116
             RijndaelProvider = new RijndaelManaged();
             RijndaelProvider.Mode = CipherMode.CFB;
             RijndaelProvider.Padding = PaddingMode.ISO10126;
+            rng = new RNGCryptoServiceProvider();
+            salt = new byte[16];
+            rng.GetBytes(salt);
         }
 
         private static void SetPwd(string pwd)
         {
-            Pwd_bytes = new Rfc2898DeriveBytes(pwd, SALT);
+            Pwd_bytes = new Rfc2898DeriveBytes(pwd, salt);
         }
 
         private static void SetKey()
